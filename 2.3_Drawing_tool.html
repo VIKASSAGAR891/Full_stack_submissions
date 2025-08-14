@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Interactive SVG Drawing Tool</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        h2 {
+            margin-bottom: 10px;
+        }
+        #drawingArea {
+            border: 2px solid #000;
+            width: 800px;
+            height: 500px;
+            background-color: #f9f9f9;
+            cursor: crosshair;
+        }
+        #clearBtn {
+            margin-bottom: 10px;
+            padding: 8px 16px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h2>SVG Freehand Drawing Tool</h2>
+    <button id="clearBtn">Clear Canvas</button>
+    <svg id="drawingArea"></svg>
+
+    <script>
+        const svg = document.getElementById("drawingArea");
+        const clearBtn = document.getElementById("clearBtn");
+        let isDrawing = false;
+        let path = null;
+        let d = "";
+
+        // Freehand drawing
+        svg.addEventListener("mousedown", (e) => {
+            isDrawing = true;
+            const rect = svg.getBoundingClientRect();
+            const startX = e.clientX - rect.left;
+            const startY = e.clientY - rect.top;
+
+            path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            path.setAttribute("stroke", "#1E90FF");
+            path.setAttribute("stroke-width", 2);
+            path.setAttribute("fill", "none");
+            
+            d = `M ${startX} ${startY}`;
+            path.setAttribute("d", d);
+            svg.appendChild(path);
+        });
+
+        svg.addEventListener("mousemove", (e) => {
+            if (!isDrawing) return;
+            const rect = svg.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            d += ` L ${x} ${y}`;
+            path.setAttribute("d", d);
+        });
+
+        svg.addEventListener("mouseup", () => {
+            isDrawing = false;
+            path = null;
+        });
+
+        svg.addEventListener("mouseleave", () => {
+            isDrawing = false;
+            path = null;
+        });
+
+        // Clear canvas button
+        clearBtn.addEventListener("click", () => {
+            svg.innerHTML = ""; // Remove all drawn paths
+        });
+    </script>
+</body>
+</html>
